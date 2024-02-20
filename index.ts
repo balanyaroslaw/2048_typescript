@@ -23,6 +23,7 @@ class Logic
 
     private emptyCells:Array<ICell> = [];
 
+    public swipePremission:boolean = true
 
     public FindEmptyCell():void
     {
@@ -47,6 +48,7 @@ class Logic
 
         const i:number = this.emptyCells[randomEmptyCell].i
         const j:number = this.emptyCells[randomEmptyCell].j
+
         if(chanceOfAddingDigit !== 3)
         {
             field[i][j] = 2
@@ -69,7 +71,19 @@ class Logic
                     {   
                         field[i-1][j] = field[i][j]
                         field[i][j] = 0
-                    }   
+                        this.swipePremission = true
+                    } 
+                    else if(field[i-1][j] !==0 && field[i-1][j] === field[i][j])
+                    {
+                        field[i-1][j] = field[i-1][j] + field[i][j]
+                        field[i][j] = 0
+                        this.swipePremission = true
+                    }
+                    else if(field[i-1][j] !==0 && field[i-1][j] !== field[i][j])
+                    {
+                        this.swipePremission = false
+                    }
+
                 }catch{}
             }
         }
@@ -87,7 +101,12 @@ class Logic
                     {   
                         field[i][j] = field[i-1][j]
                         field[i-1][j] = 0
-                    }   
+                    }
+                    else if(field[i][j]!==0 && field[i][j]===field[i-1][j])
+                    {
+                        field[i][j] = field[i][j] + field[i-1][j]
+                        field[i-1][j] = 0
+                    } 
                 }catch{}
             }
         }
@@ -105,7 +124,12 @@ class Logic
                     {   
                         field[i][j] = field[i][j-1]
                         field[i][j-1] = 0
-                    }   
+                    } 
+                    else if(field[i][j]!==0 && field[i][j] === field[i][j-1])
+                    {
+                        field[i][j] = field[i][j] + field[i][j-1]
+                        field[i][j-1] = 0
+                    }  
                 }catch{}
             }
         }
@@ -123,15 +147,25 @@ class Logic
                     {   
                         field[i][j-1] = field[i][j]
                         field[i][j] = 0
-                    }   
+                    } 
+                    else if(field[i][j-1]!==0 && field[i][j-1] === field[i][j])
+                    {
+                        field[i][j-1] = field[i][j-1] + field[i][j]
+                        field[i][j] = 0
+                    }
                 }catch{}
             }
         }
     }
 
-    
-
-
+    public CreateNew():void
+    {
+        for(let i = 0; i < 2; i++)
+        {
+            this.FindEmptyCell()
+            this.AddNewBlock()
+        }
+    }
     
 }
 class Controller
@@ -141,36 +175,41 @@ class Controller
         const logic:Logic = new Logic
     
         const visualization:Visualization = new Visualization
-
         if(event.key in Events)
         {
-            switch(event.key)
+            for(let i = 0; i < N; i++)
             {
-                case Events.ArrowUp:
+                switch(event.key)
                 {
-                    logic.SwipeUp()
-                    break;
-                }
-                case Events.ArrowDown:
-                {
-                    logic.SwipeDown()
-                    break;
-                }
-                case Events.ArrowRight:
-                {
-                    logic.SwipeRight()
-                    break
-                }
-                case Events.ArrowLeft:
-                {
-                    logic.SwipeLeft()
-                    break
+                    case Events.ArrowUp:
+                    {
+                        logic.SwipeUp()
+                        console.log(logic.swipePremission)
+                        break;
+                    }
+                    case Events.ArrowDown:
+                    {
+                        logic.SwipeDown()
+                        break;
+                    }
+                    case Events.ArrowRight:
+                    {
+                        logic.SwipeRight()
+                        break
+                    }
+                    case Events.ArrowLeft:
+                    {
+                        logic.SwipeLeft()
+                        break
+                    }
                 }
             }
         }
-
-        /*logic.FindEmptyCell()
-        logic.AddNewBlock()*/
+        if(logic.swipePremission)
+        {
+            logic.FindEmptyCell()
+            logic.AddNewBlock()
+        }
         visualization.Visualization()
 
     }
@@ -223,11 +262,11 @@ class Game
     private field:Field = new Field
 
     private visualization = new Visualization
+
     constructor()
     {   
         this.field.CreateField()
-        this.logic. FindEmptyCell()
-        this.logic.AddNewBlock()
+        this.logic.CreateNew()
         this.visualization.Visualization()
     }
     public Start():void

@@ -11,6 +11,7 @@ const N = 4;
 class Logic {
     constructor() {
         this.emptyCells = [];
+        this.swipePremission = true;
     }
     FindEmptyCell() {
         for (let i = 0; i < N; i++) {
@@ -41,6 +42,15 @@ class Logic {
                     if (field[i - 1][j] === 0) {
                         field[i - 1][j] = field[i][j];
                         field[i][j] = 0;
+                        this.swipePremission = true;
+                    }
+                    else if (field[i - 1][j] !== 0 && field[i - 1][j] === field[i][j]) {
+                        field[i - 1][j] = field[i - 1][j] + field[i][j];
+                        field[i][j] = 0;
+                        this.swipePremission = true;
+                    }
+                    else if (field[i - 1][j] !== 0 && field[i - 1][j] !== field[i][j]) {
+                        this.swipePremission = false;
                     }
                 }
                 catch (_a) { }
@@ -53,6 +63,10 @@ class Logic {
                 try {
                     if (field[i][j] === 0) {
                         field[i][j] = field[i - 1][j];
+                        field[i - 1][j] = 0;
+                    }
+                    else if (field[i][j] !== 0 && field[i][j] === field[i - 1][j]) {
+                        field[i][j] = field[i][j] + field[i - 1][j];
                         field[i - 1][j] = 0;
                     }
                 }
@@ -68,6 +82,10 @@ class Logic {
                         field[i][j] = field[i][j - 1];
                         field[i][j - 1] = 0;
                     }
+                    else if (field[i][j] !== 0 && field[i][j] === field[i][j - 1]) {
+                        field[i][j] = field[i][j] + field[i][j - 1];
+                        field[i][j - 1] = 0;
+                    }
                 }
                 catch (_a) { }
             }
@@ -81,9 +99,19 @@ class Logic {
                         field[i][j - 1] = field[i][j];
                         field[i][j] = 0;
                     }
+                    else if (field[i][j - 1] !== 0 && field[i][j - 1] === field[i][j]) {
+                        field[i][j - 1] = field[i][j - 1] + field[i][j];
+                        field[i][j] = 0;
+                    }
                 }
                 catch (_a) { }
             }
+        }
+    }
+    CreateNew() {
+        for (let i = 0; i < 2; i++) {
+            this.FindEmptyCell();
+            this.AddNewBlock();
         }
     }
 }
@@ -92,31 +120,36 @@ class Controller {
         const logic = new Logic;
         const visualization = new Visualization;
         if (event.key in Events) {
-            switch (event.key) {
-                case Events.ArrowUp:
-                    {
-                        logic.SwipeUp();
-                        break;
-                    }
-                case Events.ArrowDown:
-                    {
-                        logic.SwipeDown();
-                        break;
-                    }
-                case Events.ArrowRight:
-                    {
-                        logic.SwipeRight();
-                        break;
-                    }
-                case Events.ArrowLeft:
-                    {
-                        logic.SwipeLeft();
-                        break;
-                    }
+            for (let i = 0; i < N; i++) {
+                switch (event.key) {
+                    case Events.ArrowUp:
+                        {
+                            logic.SwipeUp();
+                            console.log(logic.swipePremission);
+                            break;
+                        }
+                    case Events.ArrowDown:
+                        {
+                            logic.SwipeDown();
+                            break;
+                        }
+                    case Events.ArrowRight:
+                        {
+                            logic.SwipeRight();
+                            break;
+                        }
+                    case Events.ArrowLeft:
+                        {
+                            logic.SwipeLeft();
+                            break;
+                        }
+                }
             }
         }
-        /*logic.FindEmptyCell()
-        logic.AddNewBlock()*/
+        if (logic.swipePremission) {
+            logic.FindEmptyCell();
+            logic.AddNewBlock();
+        }
         visualization.Visualization();
     }
 }
@@ -155,8 +188,7 @@ class Game {
         this.field = new Field;
         this.visualization = new Visualization;
         this.field.CreateField();
-        this.logic.FindEmptyCell();
-        this.logic.AddNewBlock();
+        this.logic.CreateNew();
         this.visualization.Visualization();
     }
     Start() {
