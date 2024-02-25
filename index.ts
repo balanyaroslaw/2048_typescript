@@ -6,6 +6,12 @@ interface ICell
     j:number
 }
 
+interface IColors
+{
+    value:number,
+    color:string
+}
+
 enum Events
 {
     ArrowUp = "ArrowUp",
@@ -21,12 +27,13 @@ const N:number = 4;
 class Logic
 {
 
-    private emptyCells:Array<ICell> = [];
+    public swipePremission = true
 
-    public swipePremission:boolean = true
+    private emptyCells:Array<ICell> = [];
 
     public FindEmptyCell():void
     {
+        this.emptyCells = []
         for(let i = 0; i < N; i++)
         {
             for(let j = 0; j < N; j++)
@@ -43,7 +50,7 @@ class Logic
     {
         const countOfEmptyCells:number = this.emptyCells.length
 
-        const chanceOfAddingDigit:number = Math.floor(Math.random()*4)
+        const chanceOfAddingDigit:number = Math.floor(Math.random() *4 )
         const randomEmptyCell:number = Math.floor(Math.random() * countOfEmptyCells)
 
         const i:number = this.emptyCells[randomEmptyCell].i
@@ -58,102 +65,188 @@ class Logic
             field[i][j] = 4
         }
     }
+    public PremissionCondition(isMoved:number, isNotMoved:number):void
+    {
+        if(isMoved>0)
+        {
+            this.swipePremission = true
+        }
+        else if(isNotMoved>0 && isMoved===0)
+        {
+            this.swipePremission = false
+        }
+    }
 
     public SwipeUp():void
     {
-        for(let i = N; i > 0; i--)
+        let isMoved = 0
+        let isNotMoved = 0
+        try
         {
-            for(let j = N; j >= 0; j--)
+            for(let k = 0; k < N; k++)
             {
-                try 
+                for(let i = 1; i < N; i++ )
                 {
-                    if(field[i-1][j]===0)
-                    {   
-                        field[i-1][j] = field[i][j]
-                        field[i][j] = 0
-                        this.swipePremission = true
-                    } 
-                    else if(field[i-1][j] !==0 && field[i-1][j] === field[i][j])
-                    {
-                        field[i-1][j] = field[i-1][j] + field[i][j]
-                        field[i][j] = 0
-                        this.swipePremission = true
-                    }
-                    else if(field[i-1][j] !==0 && field[i-1][j] !== field[i][j])
+                    if(field[0][i] !== 0)
                     {
                         this.swipePremission = false
                     }
-
-                }catch{}
+                    for(let j = 0; j < N; j++)
+                    {
+                        if(field[i-1][j] === 0 && field[i][j] !== 0)
+                        {
+                            field[i-1][j] = field[i][j];
+                            field[i][j] = 0;
+                            isMoved++
+                        }
+                        else if(field[i-1][j] !== 0 && field[i][j] !== 0 && field[i-1][j]===field[i][j])
+                        {
+                            field[i-1][j] = field[i-1][j] + field[i][j];
+                            field[i][j] = 0;
+                            isMoved++
+                        }
+                        else if(field[i-1][j] !== 0 && field[i][j] !== 0 && field[i-1][j]!==field[i][j])
+                        {
+                            isNotMoved++
+                        }
+                    }
+                }
             }
-        }
+            this.PremissionCondition(isMoved, isNotMoved)
+
+        }catch(_) {}
     }
 
     public SwipeDown():void
     {
-        for(let i = 1; i <= N; i++)
+        let isMoved = 0
+        let isNotMoved = 0
+        for(let k = 0; k < N; k++)
         {
-            for(let j = 0; j < N; j++)
+            for(let i = N; i >= 0; i--)
             {
-                try 
+                if(field[N-1][i] !== 0)
                 {
-                    if(field[i][j]===0)
-                    {   
-                        field[i][j] = field[i-1][j]
-                        field[i-1][j] = 0
-                    }
-                    else if(field[i][j]!==0 && field[i][j]===field[i-1][j])
+                    this.swipePremission = false
+                }
+                for(let j = 0; j < N; j++)
+                {
+                    try
                     {
-                        field[i][j] = field[i][j] + field[i-1][j]
-                        field[i-1][j] = 0
-                    } 
-                }catch{}
+                        if(field[i][j] === 0 && field[i-1][j]!==0)
+                        {
+                            field[i][j] = field[i-1][j]
+                            field[i-1][j] = 0
+                            isMoved++
+                        }
+                        else if(field[i][j] !== 0 && field[i-1][j]!==0 && field[i][j] === field[i-1][j])
+                        {
+                            field[i][j] = field[i][j] + field[i-1][j]
+                            field[i-1][j] = 0
+                            isMoved++
+                        }
+                        else if(field[i][j] !== 0 && field[i-1][j]!==0 && field[i][j] !== field[i-1][j])
+                        {
+                            isNotMoved++;
+                        }
+                    } catch(_){}
+                }
             }
         }
+        this.PremissionCondition(isMoved, isNotMoved)
     }
 
     public SwipeRight():void
     {
-        for(let i = 0; i < N; i++)
+        let isMoved = 0
+        let isNotMoved = 0
+        for(let k = 0; k < N; k++)
         {
-            for(let j = 1; j <= N; j++)
+            for(let i = 0; i < N; i++)
             {
-                try 
+                if(field[i][N-1] !== 0)
                 {
-                    if(field[i][j]===0)
-                    {   
-                        field[i][j] = field[i][j-1]
-                        field[i][j-1] = 0
-                    } 
-                    else if(field[i][j]!==0 && field[i][j] === field[i][j-1])
+                    this.swipePremission = false
+                }
+                for(let j = N; j > 0; j--)
+                {
+                    try
                     {
-                        field[i][j] = field[i][j] + field[i][j-1]
-                        field[i][j-1] = 0
-                    }  
-                }catch{}
+                        if(field[i][j]===0 && field[i][j-1]!==0)
+                        {
+                            field[i][j] = field[i][j-1]
+                            field[i][j-1] = 0
+                            isMoved++
+                        }
+                        else if(field[i][j]!==0 && field[i][j-1]!==0 && field[i][j] === field[i][j-1])
+                        {
+                            field[i][j] = field[i][j] + field[i][j-1]
+                            field[i][j-1] = 0
+                            isMoved++
+                        }
+                        else if(field[i][j]!==0 && field[i][j-1]!==0 && field[i][j] !== field[i][j-1])
+                        {
+                            isNotMoved++
+                        }
+                    }catch(_){}
+                }
             }
         }
+        this.PremissionCondition(isMoved, isNotMoved)
     }
 
     public SwipeLeft():void
     {
-        for(let i = N; i >= 0; i--)
+        let isMoved = 0
+        let isNotMoved = 0
+        for(let k = 0; k < N; k++)
         {
-            for(let j = N-1; j >= 1; j--)
+            for(let i = 0; i < N; i++)
             {
-                try 
+                if(field[i][0] !== 0)
                 {
-                    if(field[i][j-1]===0)
-                    {   
-                        field[i][j-1] = field[i][j]
+                    this.swipePremission = false
+                }
+                for(let j = 1; j < N; j++)
+                {
+                    if(field[i][j-1] ===0 && field[i][j] !== 0)
+                    {
+                        field[i][j-1] =  field[i][j]
                         field[i][j] = 0
-                    } 
-                    else if(field[i][j-1]!==0 && field[i][j-1] === field[i][j])
+                        isMoved++
+                    }
+                    else if(field[i][j-1] !== 0 && field[i][j] !== 0 && field[i][j-1] === field[i][j])
                     {
                         field[i][j-1] = field[i][j-1] + field[i][j]
                         field[i][j] = 0
+                        isMoved++
                     }
-                }catch{}
+                    else if(field[i][j-1] !== 0 && field[i][j] !== 0 && field[i][j-1] !== field[i][j])
+                    {
+                        isNotMoved++
+                    }
+                }
+            }
+        }
+        this.PremissionCondition(isMoved, isNotMoved)
+    }
+
+    public CheckState():void
+    {
+        let fullCells:number = 0;
+        for(let i = 0; i < N; i++)
+        {
+            for(let j = 0; j < N; j++)
+            {
+                if(field[i][j] !== 0)
+                {
+                    fullCells++
+                }
+                if(fullCells===16)
+                {   
+                    alert('End')
+                }
+                
             }
         }
     }
@@ -177,40 +270,37 @@ class Controller
         const visualization:Visualization = new Visualization
         if(event.key in Events)
         {
-            for(let i = 0; i < N; i++)
+            switch(event.key)
             {
-                switch(event.key)
+                case Events.ArrowUp:
                 {
-                    case Events.ArrowUp:
-                    {
-                        logic.SwipeUp()
-                        console.log(logic.swipePremission)
-                        break;
-                    }
-                    case Events.ArrowDown:
-                    {
-                        logic.SwipeDown()
-                        break;
-                    }
-                    case Events.ArrowRight:
-                    {
-                        logic.SwipeRight()
-                        break
-                    }
-                    case Events.ArrowLeft:
-                    {
-                        logic.SwipeLeft()
-                        break
-                    }
+                    logic.SwipeUp()
+                    break;
                 }
+                case Events.ArrowDown:
+                {
+                    logic.SwipeDown()
+                    break;
+                }
+                case Events.ArrowRight:
+                {
+                    logic.SwipeRight()
+                    break
+                }
+                case Events.ArrowLeft:
+                {
+                    logic.SwipeLeft()
+                    break
+                }
+            }   
+            if(logic.swipePremission)
+            {
+                logic.FindEmptyCell()
+                logic.AddNewBlock()
             }
+            logic.CheckState()
+            visualization.Visualization()
         }
-        if(logic.swipePremission)
-        {
-            logic.FindEmptyCell()
-            logic.AddNewBlock()
-        }
-        visualization.Visualization()
 
     }
 }
@@ -235,8 +325,10 @@ class Field
 
 class Visualization
 {
-    
-
+    private valuesColors:Array<IColors> = [{value:2, color:"#EEE4DA"},{value:4, color:"#EEE0C6"},
+                                           {value:8, color:"#F3B174"},{value:16, color:"#E89A6C"},
+                                           {value:32, color:"#E68366"},{value:64, color:"#E46747"}]
+    private service:Service = new Service
     public Visualization():void
     {
         let fieldString:string = ''
@@ -244,13 +336,45 @@ class Visualization
         {
             for(let j = 0; j < N; j++)
             {
-                console.log()
-                fieldString += field[i][j].toString() + '&emsp;'
+                if(field[i][j] !== 0)
+                {
+                    document.getElementsByClassName(this.service.joinHTMLClassName(i,j))[0].innerHTML = field[i][j].toString()
+                    this.valuesColors.map(vc=>{
+                        if(vc.value===field[i][j])
+                        {
+                            document.getElementsByClassName(this.service.joinHTMLClassName(i,j))[0].setAttribute("style",`background-color:${vc.color}`);
+                        }
+                    })
+                    if(field[i][j]>=128)
+                    {
+                        document.getElementsByClassName(this.service.joinHTMLClassName(i,j))[0].setAttribute("style","background-color:#E7CD70");
+                    }
+                }
+                else
+                {
+                    document.getElementsByClassName(this.service.joinHTMLClassName(i,j))[0].innerHTML = ' '
+                    document.getElementsByClassName(this.service.joinHTMLClassName(i,j))[0].setAttribute("style","background-color:#CDC1B3");
+                }
             }
-            fieldString += '<br>'
         }
-        
-        document.getElementsByClassName('test')[0].innerHTML = fieldString
+    }
+}
+
+class Service
+{
+    public splitHTMLClassName(HTMLClassName:string):ICell
+    {
+        let [i,j]:number[] = HTMLClassName.replace('cell',' ')
+                                          .split('_')
+                                          .map(i=>{return Number.parseInt(i)})
+        let cellNumber:ICell = {i:i,j:j}
+        return cellNumber
+    }
+
+    public joinHTMLClassName(i:number, j:number):string
+    {
+        let HTMLClassName:string = `cell ${i}_${j}`
+        return HTMLClassName
     }
 }
 class Game

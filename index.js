@@ -10,10 +10,11 @@ let field = [];
 const N = 4;
 class Logic {
     constructor() {
-        this.emptyCells = [];
         this.swipePremission = true;
+        this.emptyCells = [];
     }
     FindEmptyCell() {
+        this.emptyCells = [];
         for (let i = 0; i < N; i++) {
             for (let j = 0; j < N; j++) {
                 if (field[i][j] === 0) {
@@ -35,76 +36,141 @@ class Logic {
             field[i][j] = 4;
         }
     }
+    PremissionCondition(isMoved, isNotMoved) {
+        if (isMoved > 0) {
+            this.swipePremission = true;
+        }
+        else if (isNotMoved > 0 && isMoved === 0) {
+            this.swipePremission = false;
+        }
+    }
     SwipeUp() {
-        for (let i = N; i > 0; i--) {
-            for (let j = N; j >= 0; j--) {
-                try {
-                    if (field[i - 1][j] === 0) {
-                        field[i - 1][j] = field[i][j];
-                        field[i][j] = 0;
-                        this.swipePremission = true;
-                    }
-                    else if (field[i - 1][j] !== 0 && field[i - 1][j] === field[i][j]) {
-                        field[i - 1][j] = field[i - 1][j] + field[i][j];
-                        field[i][j] = 0;
-                        this.swipePremission = true;
-                    }
-                    else if (field[i - 1][j] !== 0 && field[i - 1][j] !== field[i][j]) {
+        let isMoved = 0;
+        let isNotMoved = 0;
+        try {
+            for (let k = 0; k < N; k++) {
+                for (let i = 1; i < N; i++) {
+                    if (field[0][i] !== 0) {
                         this.swipePremission = false;
                     }
+                    for (let j = 0; j < N; j++) {
+                        if (field[i - 1][j] === 0 && field[i][j] !== 0) {
+                            field[i - 1][j] = field[i][j];
+                            field[i][j] = 0;
+                            isMoved++;
+                        }
+                        else if (field[i - 1][j] !== 0 && field[i][j] !== 0 && field[i - 1][j] === field[i][j]) {
+                            field[i - 1][j] = field[i - 1][j] + field[i][j];
+                            field[i][j] = 0;
+                            isMoved++;
+                        }
+                        else if (field[i - 1][j] !== 0 && field[i][j] !== 0 && field[i - 1][j] !== field[i][j]) {
+                            isNotMoved++;
+                        }
+                    }
                 }
-                catch (_a) { }
             }
+            this.PremissionCondition(isMoved, isNotMoved);
         }
+        catch (_) { }
     }
     SwipeDown() {
-        for (let i = 1; i <= N; i++) {
-            for (let j = 0; j < N; j++) {
-                try {
-                    if (field[i][j] === 0) {
-                        field[i][j] = field[i - 1][j];
-                        field[i - 1][j] = 0;
-                    }
-                    else if (field[i][j] !== 0 && field[i][j] === field[i - 1][j]) {
-                        field[i][j] = field[i][j] + field[i - 1][j];
-                        field[i - 1][j] = 0;
-                    }
+        let isMoved = 0;
+        let isNotMoved = 0;
+        for (let k = 0; k < N; k++) {
+            for (let i = N; i >= 0; i--) {
+                if (field[N - 1][i] !== 0) {
+                    this.swipePremission = false;
                 }
-                catch (_a) { }
+                for (let j = 0; j < N; j++) {
+                    try {
+                        if (field[i][j] === 0 && field[i - 1][j] !== 0) {
+                            field[i][j] = field[i - 1][j];
+                            field[i - 1][j] = 0;
+                            isMoved++;
+                        }
+                        else if (field[i][j] !== 0 && field[i - 1][j] !== 0 && field[i][j] === field[i - 1][j]) {
+                            field[i][j] = field[i][j] + field[i - 1][j];
+                            field[i - 1][j] = 0;
+                            isMoved++;
+                        }
+                        else if (field[i][j] !== 0 && field[i - 1][j] !== 0 && field[i][j] !== field[i - 1][j]) {
+                            isNotMoved++;
+                        }
+                    }
+                    catch (_) { }
+                }
             }
         }
+        this.PremissionCondition(isMoved, isNotMoved);
     }
     SwipeRight() {
-        for (let i = 0; i < N; i++) {
-            for (let j = 1; j <= N; j++) {
-                try {
-                    if (field[i][j] === 0) {
-                        field[i][j] = field[i][j - 1];
-                        field[i][j - 1] = 0;
-                    }
-                    else if (field[i][j] !== 0 && field[i][j] === field[i][j - 1]) {
-                        field[i][j] = field[i][j] + field[i][j - 1];
-                        field[i][j - 1] = 0;
-                    }
+        let isMoved = 0;
+        let isNotMoved = 0;
+        for (let k = 0; k < N; k++) {
+            for (let i = 0; i < N; i++) {
+                if (field[i][N - 1] !== 0) {
+                    this.swipePremission = false;
                 }
-                catch (_a) { }
+                for (let j = N; j > 0; j--) {
+                    try {
+                        if (field[i][j] === 0 && field[i][j - 1] !== 0) {
+                            field[i][j] = field[i][j - 1];
+                            field[i][j - 1] = 0;
+                            isMoved++;
+                        }
+                        else if (field[i][j] !== 0 && field[i][j - 1] !== 0 && field[i][j] === field[i][j - 1]) {
+                            field[i][j] = field[i][j] + field[i][j - 1];
+                            field[i][j - 1] = 0;
+                            isMoved++;
+                        }
+                        else if (field[i][j] !== 0 && field[i][j - 1] !== 0 && field[i][j] !== field[i][j - 1]) {
+                            isNotMoved++;
+                        }
+                    }
+                    catch (_) { }
+                }
             }
         }
+        this.PremissionCondition(isMoved, isNotMoved);
     }
     SwipeLeft() {
-        for (let i = N; i >= 0; i--) {
-            for (let j = N - 1; j >= 1; j--) {
-                try {
-                    if (field[i][j - 1] === 0) {
+        let isMoved = 0;
+        let isNotMoved = 0;
+        for (let k = 0; k < N; k++) {
+            for (let i = 0; i < N; i++) {
+                if (field[i][0] !== 0) {
+                    this.swipePremission = false;
+                }
+                for (let j = 1; j < N; j++) {
+                    if (field[i][j - 1] === 0 && field[i][j] !== 0) {
                         field[i][j - 1] = field[i][j];
                         field[i][j] = 0;
+                        isMoved++;
                     }
-                    else if (field[i][j - 1] !== 0 && field[i][j - 1] === field[i][j]) {
+                    else if (field[i][j - 1] !== 0 && field[i][j] !== 0 && field[i][j - 1] === field[i][j]) {
                         field[i][j - 1] = field[i][j - 1] + field[i][j];
                         field[i][j] = 0;
+                        isMoved++;
+                    }
+                    else if (field[i][j - 1] !== 0 && field[i][j] !== 0 && field[i][j - 1] !== field[i][j]) {
+                        isNotMoved++;
                     }
                 }
-                catch (_a) { }
+            }
+        }
+        this.PremissionCondition(isMoved, isNotMoved);
+    }
+    CheckState() {
+        let fullCells = 0;
+        for (let i = 0; i < N; i++) {
+            for (let j = 0; j < N; j++) {
+                if (field[i][j] !== 0) {
+                    fullCells++;
+                }
+                if (fullCells === 16) {
+                    alert('End');
+                }
             }
         }
     }
@@ -120,37 +186,35 @@ class Controller {
         const logic = new Logic;
         const visualization = new Visualization;
         if (event.key in Events) {
-            for (let i = 0; i < N; i++) {
-                switch (event.key) {
-                    case Events.ArrowUp:
-                        {
-                            logic.SwipeUp();
-                            console.log(logic.swipePremission);
-                            break;
-                        }
-                    case Events.ArrowDown:
-                        {
-                            logic.SwipeDown();
-                            break;
-                        }
-                    case Events.ArrowRight:
-                        {
-                            logic.SwipeRight();
-                            break;
-                        }
-                    case Events.ArrowLeft:
-                        {
-                            logic.SwipeLeft();
-                            break;
-                        }
-                }
+            switch (event.key) {
+                case Events.ArrowUp:
+                    {
+                        logic.SwipeUp();
+                        break;
+                    }
+                case Events.ArrowDown:
+                    {
+                        logic.SwipeDown();
+                        break;
+                    }
+                case Events.ArrowRight:
+                    {
+                        logic.SwipeRight();
+                        break;
+                    }
+                case Events.ArrowLeft:
+                    {
+                        logic.SwipeLeft();
+                        break;
+                    }
             }
+            if (logic.swipePremission) {
+                logic.FindEmptyCell();
+                logic.AddNewBlock();
+            }
+            logic.CheckState();
+            visualization.Visualization();
         }
-        if (logic.swipePremission) {
-            logic.FindEmptyCell();
-            logic.AddNewBlock();
-        }
-        visualization.Visualization();
     }
 }
 class Field {
@@ -169,16 +233,46 @@ class Field {
     }
 }
 class Visualization {
+    constructor() {
+        this.valuesColors = [{ value: 2, color: "#EEE4DA" }, { value: 4, color: "#EEE0C6" },
+            { value: 8, color: "#F3B174" }, { value: 16, color: "#E89A6C" },
+            { value: 32, color: "#E68366" }, { value: 64, color: "#E46747" }];
+        this.service = new Service;
+    }
     Visualization() {
         let fieldString = '';
         for (let i = 0; i < N; i++) {
             for (let j = 0; j < N; j++) {
-                console.log();
-                fieldString += field[i][j].toString() + '&emsp;';
+                if (field[i][j] !== 0) {
+                    document.getElementsByClassName(this.service.joinHTMLClassName(i, j))[0].innerHTML = field[i][j].toString();
+                    this.valuesColors.map(vc => {
+                        if (vc.value === field[i][j]) {
+                            document.getElementsByClassName(this.service.joinHTMLClassName(i, j))[0].setAttribute("style", `background-color:${vc.color}`);
+                        }
+                    });
+                    if (field[i][j] >= 128) {
+                        document.getElementsByClassName(this.service.joinHTMLClassName(i, j))[0].setAttribute("style", "background-color:#E7CD70");
+                    }
+                }
+                else {
+                    document.getElementsByClassName(this.service.joinHTMLClassName(i, j))[0].innerHTML = ' ';
+                    document.getElementsByClassName(this.service.joinHTMLClassName(i, j))[0].setAttribute("style", "background-color:#CDC1B3");
+                }
             }
-            fieldString += '<br>';
         }
-        document.getElementsByClassName('test')[0].innerHTML = fieldString;
+    }
+}
+class Service {
+    splitHTMLClassName(HTMLClassName) {
+        let [i, j] = HTMLClassName.replace('cell', ' ')
+            .split('_')
+            .map(i => { return Number.parseInt(i); });
+        let cellNumber = { i: i, j: j };
+        return cellNumber;
+    }
+    joinHTMLClassName(i, j) {
+        let HTMLClassName = `cell ${i}_${j}`;
+        return HTMLClassName;
     }
 }
 class Game {
