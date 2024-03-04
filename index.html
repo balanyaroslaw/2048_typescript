@@ -4,9 +4,30 @@
     <title>Document</title>
     <link rel="stylesheet" href="style.css">
     <link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
-    <span class="test"></span>
+    <div class="title__container">
+        <div class="title__content">
+            <span class="title">2048</span>
+            <div class="score__container">
+                <div class="score__content">
+                    <span class="text">Score</span>
+                    <span class="score__value value">0</span>
+                </div>
+                <div class="score__content">
+                    <span class="text">Record</span>
+                    <span class="record__value value">0</span>
+                </div>
+            </div>
+        </div>
+        <div class="buttons__container">
+            <span class="return__back">
+                <i class="fa fa-arrow-left"></i>
+            </span>
+            <span class="restart">&#8635;</span>
+        </div>
+    </div>
    <div class="container">
         <span class="cell 0_0"></span>
         <span class="cell 0_1"></span>
@@ -25,6 +46,7 @@
         <span class="cell 3_2"></span>
         <span class="cell 3_3"></span>    
    </div>
+   <div class="menu"></div>
 </body>
 <script src="index.js"></script>
 </html>

@@ -2,15 +2,17 @@ body
 {
     width: 100%;
     height: 100vh;
-    background-color: #36322e;
+    background-color: #FBF5E9;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
     overflow: hidden;
 }
 .container
 {
     width: 480px;
+    z-index: 1;
     background-color: #BBADA0;
     border-radius: 5px;
     display: flex;
@@ -30,7 +32,120 @@ body
     font-size: 40px;
     font-family: Orbitron;
     color: white;
+    opacity: 0.5;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+.menu
+{
+    position: absolute;
+    visibility: hidden;
+    width: 300px;
+    height: 150px;
+    z-index: 2;
+    opacity: 0.8;
+    border-radius: 8px;
+    font-size: 40px;
+    font-family: Orbitron;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #E7CD70;
+
+}
+.button
+{
+    width: 50px;
+    height: 30px;
+    border-radius: 8px;
+    background-color: #a89e92;
+    font-size: 32px;
+    font-family: Orbitron;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.title__container
+{
+    width: 480px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 20px;
+    margin-bottom: 30px;
+
+}
+.title__content
+{
+    width: 480px;
+    display: flex;
+    justify-content: space-between;
+}
+.title
+{
+    font-size: 50px;
+    font-family: Orbitron;
+    color: #756E64;
+    display: flex;
+}
+.score__container
+{
+    display: flex;
+}
+.text
+{
+    padding: 0px 15px 0px 15px;
+    font-size: 18px;
+    opacity: 0.7;
+    font-family: Orbitron;
+}
+.score__content
+{
+    background-color: #888074;
+    opacity: 0.8;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    margin-left: 40px;
+}
+.value
+{
+    padding: 0px 15px 0px 15px;
+    font-size: 20px;
+    color: white;
+    font-family: Orbitron;
+}
+.buttons__container
+{
+    margin: 15px 0px 0px auto;
+    display: flex;
+    margin-bottom: 10px;
+}
+.return__back
+{
+    background-color: #888074;
+    opacity: 0.8;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    padding: 10px 15px 10px 15px;
+}
+.restart
+{
+    background-color: #888074;
+    opacity: 0.8;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    padding: 10px 15px 10px 15px;
+    margin-left: 20px;
 }
